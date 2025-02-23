@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 
@@ -6,87 +6,91 @@ namespace testing;
 
 public static class Test2
 {
-    public static void Run()
+    public static void RunTest21()
     {
         var driver = new ChromeDriver();
-        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
+        driver.Manage().Window.Maximize();
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
-        driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
+        driver.Navigate().GoToUrl("https://demoqa.com/");
         
-        AddGiftCards(driver, wait);
-        AddJewelry(driver, wait);
-        AddWishlistItemsToCart(driver);
-        
-        // confirm sub-total
-        var totals = driver.FindElement(By.XPath("//div[@class='total-info']"));
-        var tableRow = totals.FindElement(By.XPath(".//tr[.//span[text()='Sub-Total:']]"));
-        var priceSpan = tableRow.FindElement(By.XPath(".//span[@class='product-price']"));
-        Console.WriteLine($"Total Price: {priceSpan.Text}");
-        driver.Quit();
+        driver.FindElement(By.XPath(
+                "//div[@class='card mt-4 top-card']//div[@class='card-body']//h5[text()='Widgets']/ancestor::div[@class='card mt-4 top-card']"
+            )
+        ).Click();
 
-    }
+        driver.FindElement(By.XPath(
+                "//div[@class='element-list collapse show']//li[.//span[@class='text' and text()='Progress Bar']]"
+            )
+        ).Click();
 
-    private static void AddGiftCards(ChromeDriver driver, WebDriverWait wait)
-    {
-        var category = driver.FindElement(By.XPath("//div[@class='block block-category-navigation']"));
-        category.FindElement(By.XPath("//a[@href='/gift-cards']")).Click();
+        var progressBarContainer = driver.FindElement(By.XPath("//div[@id='progressBarContainer']"));
+        var progressBar = progressBarContainer.FindElement(By.XPath(".//div[@class='progress-bar bg-info']"));
+        var progressBarButtonStart = progressBarContainer.FindElement(By.XPath(".//button[@id='startStopButton']"));
+        progressBarButtonStart.Click();
         
-        var products = driver.FindElements(By.XPath("//div[contains(@class, 'item-box')]"));
-        var product = products
-            .Where(webElement =>
-            {
-                var priceText = webElement.FindElement(By.XPath(".//div[contains(@class, 'price')]")).Text;
-                return !string.IsNullOrEmpty(priceText) && double.TryParse(priceText, out double price) && price > 99.0;
-            })
-            .First();
-        product?.Click();
-        
-        driver.FindElement(By.XPath("//input[@id='giftcard_4_RecipientName']")).SendKeys("John");
-        driver.FindElement(By.XPath("//input[@id='giftcard_4_SenderName']")).SendKeys("John");
-        driver.FindElement(By.XPath("//input[@id='addtocart_4_EnteredQuantity']")).Clear();
-        driver.FindElement(By.XPath("//input[@id='addtocart_4_EnteredQuantity']")).SendKeys("5000");
-        driver.FindElement(By.XPath("//input[@id='add-to-cart-button-4']")).Click();
-        WaitForItemDisplay(wait, "//div[@id='bar-notification']");
-        driver.FindElement(By.XPath("//input[@id='add-to-wishlist-button-4']")).Click();
-    }
-
-    private static void AddJewelry(ChromeDriver driver, WebDriverWait wait)
-    {
-        var category = driver.FindElement(By.XPath("//div[@class='block block-category-navigation']"));
-        category.FindElement(By.XPath("//a[@href='/jewelry']")).Click();
-        driver.FindElement(By.XPath("//a[@href='/create-it-yourself-jewelry']")).Click();
-        
-        var dropdownElement = driver.FindElement(By.XPath("//select[@id='product_attribute_71_9_15']"));
-        var dropdown = new SelectElement(dropdownElement);
-        dropdown.SelectByValue("47");
-        
-        driver.FindElement(By.XPath("//input[@id='product_attribute_71_10_16']")).SendKeys("80");
-        driver.FindElement(By.XPath("//input[@id='product_attribute_71_11_17_50']")).Click();
-        driver.FindElement(By.XPath("//input[@id='addtocart_71_EnteredQuantity']")).Clear();
-        driver.FindElement(By.XPath("//input[@id='addtocart_71_EnteredQuantity']")).SendKeys("26");
-        driver.FindElement(By.XPath("//input[@id='add-to-cart-button-71']")).Click();
-        WaitForItemDisplay(wait, "//div[@id='bar-notification']");
-        driver.FindElement(By.XPath("//input[@id='add-to-wishlist-button-71']")).Click();
-    }
-
-    private static void AddWishlistItemsToCart(ChromeDriver driver)
-    {
-        var headerDiv = driver.FindElement(By.XPath("//div[@class='header']"));
-        headerDiv.FindElement(By.XPath(".//a[contains(@href, '/wishlist')]")).Click();
-        
-        var cartItemRow = driver.FindElement(By.XPath("//tr[@class='cart-item-row']"));
-        var checkBoxes = cartItemRow.FindElements(By.XPath(".//input[@name='addtocart']"));
-        foreach (var checkBox in checkBoxes)
+        wait.Until(d =>
         {
-            Thread.Sleep(1000);
-            checkBox.Click();
-        }
+            string progressValue = progressBar.GetAttribute("aria-valuenow");
+            return !string.IsNullOrEmpty(progressValue) && Convert.ToInt32(progressValue) == 100;
+        });
         
-        driver.FindElement(By.XPath("//input[@class='button-2 wishlist-add-to-cart-button']")).Click();
+        progressBarContainer.FindElement(By.XPath(".//button[@id='resetButton']")).Click();
+        string progressValue = progressBar.GetAttribute("aria-valuenow");
+        Console.WriteLine(progressValue);
+      
+        driver.Quit();
     }
-    
-    private static void WaitForItemDisplay(WebDriverWait wait, string path)
+
+    public static void RunTest22()
     {
-        wait.Until(d => d.FindElement(By.XPath(path)).Displayed);
+        var driver = new ChromeDriver();
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+        driver.Manage().Window.Maximize();
+        
+        driver.Navigate().GoToUrl("https://demoqa.com/");
+        
+        driver.FindElement(By.XPath(
+                "//div[@class='card mt-4 top-card']//div[@class='card-body']//h5[text()='Elements']/ancestor::div[@class='card mt-4 top-card']"
+            )
+        ).Click();
+        
+        driver.FindElement(By.XPath(
+                "//div[@class='element-list collapse show']//li[.//span[@class='text' and text()='Web Tables']]"
+            )
+        ).Click();
+
+        var addButton = driver.FindElement(By.XPath("//button[@id='addNewRecordButton']"));
+        var pageCount = driver.FindElement(By.XPath("//span[@class='-totalPages']"));
+
+        int increment = 1;
+        wait.Until(d => 
+        {
+            addButton.Click();
+            driver.FindElement(By.XPath("//input[@id='firstName']")).SendKeys("Kristupas" + increment);
+            driver.FindElement(By.XPath("//input[@id='lastName']")).SendKeys("Karalius" + increment);
+            driver.FindElement(By.XPath("//input[@id='userEmail']")).SendKeys("kristupas" + increment + "@gmail.com");
+            driver.FindElement(By.XPath("//input[@id='age']")).SendKeys((20 + increment).ToString());
+            driver.FindElement(By.XPath("//input[@id='salary']")).SendKeys((20000 + increment).ToString());
+            driver.FindElement(By.XPath("//input[@id='department']")).SendKeys("department" + increment);
+            driver.FindElement(By.XPath("//button[@id='submit']")).Click();
+            ++increment; 
+            return pageCount.Text == "2";
+        });
+        
+        driver.FindElement(By.XPath("//div[@class='-next']//button[@class='-btn']")).Click();
+
+        var row = driver.FindElement(By.XPath("//div[@role='row']"));
+        row.FindElement(By.XPath("//span[@title='Delete']")).Click();
+        
+        var pageInfo = driver.FindElement(By.XPath("//span[@class='-pageInfo']"));
+        var currentPage = pageInfo.FindElement(By.XPath(".//input[@aria-label='jump to page']")).GetAttribute("value");
+        var totalPages = pageInfo.FindElement(By.XPath(".//span[@class='-totalPages']")).Text;
+        
+        
+        Console.WriteLine("Current page: " + currentPage);
+        Console.WriteLine("Total pages: " + totalPages);
+        
+        driver.Quit();
     }
 }
