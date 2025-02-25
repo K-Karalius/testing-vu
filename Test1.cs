@@ -8,16 +8,16 @@ public static class Test1
 {
     public static void Run()
     {
-        var driver = new ChromeDriver();
+        var options = new ChromeOptions();
+        options.AddArguments("--start-maximized");
+        var driver = new ChromeDriver(options);
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
-        driver.Manage().Window.Maximize();
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
         
         AddGiftCards(driver, wait);
         AddJewelry(driver, wait);
         AddWishlistItemsToCart(driver);
         
-        // confirm sub-total
         var totals = driver.FindElement(By.XPath("//div[@class='total-info']"));
         var tableRow = totals.FindElement(By.XPath(".//tr[.//span[text()='Sub-Total:']]"));
         var priceSpan = tableRow.FindElement(By.XPath(".//span[@class='product-price']"));

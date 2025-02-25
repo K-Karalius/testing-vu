@@ -49,8 +49,9 @@ public class Test3
     [SetUp]
     public void SetUp()
     {
-        driver = new ChromeDriver();
-        driver.Manage().Window.Maximize();
+        var options = new ChromeOptions();
+        options.AddArguments("--start-maximized");
+        driver = new ChromeDriver(options);
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
     }

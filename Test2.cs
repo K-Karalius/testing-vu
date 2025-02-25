@@ -8,8 +8,9 @@ public static class Test2
 {
     public static void RunTest21()
     {
-        var driver = new ChromeDriver();
-        driver.Manage().Window.Maximize();
+        var options = new ChromeOptions();
+        options.AddArguments("--start-maximized");
+        var driver = new ChromeDriver(options);
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
         driver.Navigate().GoToUrl("https://demoqa.com/");
@@ -44,7 +45,9 @@ public static class Test2
 
     public static void RunTest22()
     {
-        var driver = new ChromeDriver();
+        var options = new ChromeOptions();
+        options.AddArguments("--start-maximized");
+        var driver = new ChromeDriver(options);
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
         driver.Manage().Window.Maximize();
         

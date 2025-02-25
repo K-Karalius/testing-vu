@@ -6,12 +6,11 @@ public static class Test0
 {
     public static void Run()
     {
-        var driver = new ChromeDriver();
-
+        var options = new ChromeOptions();
+        options.AddArguments("--start-maximized");
+        var driver = new ChromeDriver(options);
+        
         driver.Navigate().GoToUrl("https://www.google.com");
-
-        Thread.Sleep(2000);
-
         driver.Quit();
     }
 }
