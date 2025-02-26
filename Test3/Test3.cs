@@ -9,8 +9,9 @@ public class UserRegistration
 {
     public static (string email, string password) CreateUser()
     {
-        IWebDriver driver = new ChromeDriver();
-        driver.Manage().Window.Maximize();
+        var options = new ChromeOptions();
+        options.AddArgument("--headless=new");
+        var driver = new ChromeDriver(options);
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
         driver.FindElement(By.XPath("//div[@class='header-links']//a[@href='/login']")).Click();
         driver.FindElement(By.XPath("//div[@class='buttons']//input[@class='button-1 register-button']")).Click();
@@ -50,7 +51,7 @@ public class Test3
     public void SetUp()
     {
         var options = new ChromeOptions();
-        options.AddArguments("--start-maximized");
+        options.AddArgument("--headless=new");
         driver = new ChromeDriver(options);
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
