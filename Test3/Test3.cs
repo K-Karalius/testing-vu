@@ -10,7 +10,7 @@ public class UserRegistration
     public static (string email, string password) CreateUser()
     {
         var options = new ChromeOptions();
-        options.AddArgument("--headless=new");
+        options.AddArgument("--headless");
         var driver = new ChromeDriver(options);
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
         driver.FindElement(By.XPath("//div[@class='header-links']//a[@href='/login']")).Click();
@@ -51,10 +51,10 @@ public class Test3
     public void SetUp()
     {
         var options = new ChromeOptions();
-        options.AddArgument("--headless=new");
+        options.AddArgument("--headless");
         driver = new ChromeDriver(options);
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
-        wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+        wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
     }
 
     private void Login()
@@ -81,17 +81,22 @@ public class Test3
         var products = File.ReadAllLines(filePath);
         foreach (var product in products)
         {
-            driver.FindElement(By.XPath($"//a[text()='{product.Trim()}']")).Click();
-            driver.FindElement(By.XPath("//input[contains(@class, 'add-to-cart-button')]")).Click();
-            driver.Navigate().Back();
+            driver.FindElement(By.XPath($"//div[@class='item-box'][.//h2/a[normalize-space(text())='{product.Trim()}']]//input[@value='Add to cart']")).Click();
+            wait.Until(d => !d.FindElement(By.XPath("//div[@class='ajax-loading-block-window']")).Displayed);
         }
     }
 
     private void Checkout()
     {
+        var bar = driver.FindElement(By.XPath("//div[@id='bar-notification']"));
+        if (bar.Displayed)
+        {
+            bar.FindElement(By.XPath(".//span[@class='close']")).Click();
+        }
         driver.FindElement(By.XPath("//div[@class='header-links']//a[@href='/cart']")).Click();
         driver.FindElement(By.XPath("//input[@id='termsofservice']")).Click();
         driver.FindElement(By.XPath("//button[@id='checkout']")).Click();
+        
         if (driver.FindElements(By.XPath("//select[@id='billing-address-select']")).Count == 0)
         {
             var dropdownElement = driver.FindElement(By.XPath("//select[@id='BillingNewAddress_CountryId']"));
